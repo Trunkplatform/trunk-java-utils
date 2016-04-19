@@ -1,10 +1,8 @@
 group 'trunk.java.utils'
-version '1.0'
-
 
 configure(subprojects) {
     apply plugin: 'java'
-
+    version = project.hasProperty('app_version') ? app_version : 'local'
     sourceCompatibility = 1.8
 
     repositories {
