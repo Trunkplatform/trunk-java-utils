@@ -24,4 +24,9 @@ public class JodaClock implements Clock {
     return DateTime.now().withZone(dateTimeZone);
   }
 
+  public static DateTime recalibrateLocalTimezoneToDifferentTimezone(DateTime d, DateTimeZone timeZone) {
+    DateTimeZone originalTimeZone = d.getZone();
+    return d.withZone(timeZone)
+            .withZoneRetainFields(originalTimeZone);
+  }
 }
