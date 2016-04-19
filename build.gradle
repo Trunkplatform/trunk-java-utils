@@ -19,4 +19,17 @@ configure(subprojects) {
 
         testCompile 'org.hamcrest:hamcrest-all:1.3'
     }
+
+    test {
+        beforeTest { descriptor ->
+            logger.lifecycle("Running: " + descriptor)
+        }
+    }
+
+    test {
+        useTestNG()
+        systemProperty("io.netty.leakDetectionLevel", "paranoid")
+        systemProperty("io.LEVEL", "DEBUG")
+        systemProperty("rx.LEVEL", "DEBUG")
+    }
 }
