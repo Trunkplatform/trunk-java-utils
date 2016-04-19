@@ -1,0 +1,22 @@
+group 'trunk.java.utils'
+version '1.0'
+
+
+configure(subprojects) {
+    apply plugin: 'java'
+
+    sourceCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+
+        jcenter()
+    }
+
+    dependencies {
+        testCompile 'org.testng:testng:6.8'
+        testCompile 'org.mockito:mockito-core:2.0.40-beta'
+
+        testCompile 'org.hamcrest:hamcrest-all:1.3'
+    }
+}
