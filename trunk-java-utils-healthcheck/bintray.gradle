@@ -3,7 +3,7 @@ task bintrayDelete << {
                      bintrayUser + ':' + bintrayApiKey,
                      '-X',
                      'DELETE',
-                     "https://api.bintray.com/packages/trunkplatform/trunk-java-utils/trunk-java-utils-healthcheck/versions/${version}/"].execute()
+                     "https://api.bintray.com/packages/trunkplatform/trunk-java-oss/trunk-java-utils-healthcheck/versions/${version}/"].execute()
 
     println("delete: " + deleteUrl.text)
 }
