@@ -3,7 +3,7 @@ task bintrayDelete << {
                      bintrayUser + ':' + bintrayApiKey,
                      '-X',
                      'DELETE',
-                     "https://api.bintray.com/packages/trunkplatform/trunk-java-utils/clock/versions/${version}/"].execute()
+                     "https://api.bintray.com/packages/trunkplatform/trunk-java-utils/trunk-java-utils-time/versions/${version}/"].execute()
 
     println("delete: " + deleteUrl.text)
 }
@@ -19,7 +19,7 @@ bintray {
     pkg {
         repo = 'trunk-java-utils'
         userOrg = 'trunkplatform'
-        name = 'clock'
+        name = 'trunk-java-utils-time'
         desc = 'Joda clock implementation based on timezone'
         websiteUrl = 'https://github.com/Trunkplatform/trunk-java-utils'
         issueTrackerUrl = 'https://github.com/Trunkplatform/trunk-java-utils/issues'
