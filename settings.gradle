@@ -1,3 +1,4 @@
 rootProject.name = 'trunk-java-utils'
 
 include 'clock'
+include 'health'
