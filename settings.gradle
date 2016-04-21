@@ -2,3 +2,4 @@ rootProject.name = 'trunk-java-utils'
 
 include 'trunk-java-utils-time'
 include 'trunk-java-utils-healthcheck'
+include 'trunk-java-utils-test'
