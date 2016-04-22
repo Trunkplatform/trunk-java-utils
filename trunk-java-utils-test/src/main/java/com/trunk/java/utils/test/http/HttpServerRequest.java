@@ -1,5 +1,7 @@
 package com.trunk.java.utils.test.http;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +18,11 @@ public class HttpServerRequest {
   }
 
   public String getDecodedPath() {
-    return new QueryStringDecoder(request.getUri()).path();
+    try {
+      return new URI(request.getUri()).getPath();
+    } catch (URISyntaxException e) {
+      return null;
+    }
   }
 
   public Map<String, List<String>> getQueryParameters() {
