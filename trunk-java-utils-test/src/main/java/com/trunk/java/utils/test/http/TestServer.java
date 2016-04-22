@@ -114,7 +114,7 @@ public class TestServer {
               return response;
             }
 
-            parseGrantResponse(i[0], request, response, responses);
+            parseGrantResponse(i, request, response, responses);
             return response;
           }
         );
@@ -126,10 +126,10 @@ public class TestServer {
     }
   }
 
-  private static void parseGrantResponse(int i, HttpServerRequest request, HttpServerResponse response, HandleOAuth[] responses) {GrantRequest grantRequest = parseGrantRequest(request.getContent());
-    GrantResponse grantResponse = responses[i].f(grantRequest);
-    if (i < responses.length - 1) {
-      i += 1;
+  private static void parseGrantResponse(int[] i, HttpServerRequest request, HttpServerResponse response, HandleOAuth[] responses) {GrantRequest grantRequest = parseGrantRequest(request.getContent());
+    GrantResponse grantResponse = responses[i[0]].f(grantRequest);
+    if (i[0] < responses.length - 1) {
+      i[0] += 1;
     }
     String json = grantResponse.asJson();
     if (json != null) {
