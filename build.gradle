@@ -1,15 +1,27 @@
-group 'trunk.java.utils'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'com.trunk.commons'
+
+def baseVersion = '1.0.0'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 configure(subprojects) {
-    apply plugin: 'java'
-    version = project.hasProperty('app_version') ? app_version : 'local'
-    sourceCompatibility = 1.8
-
     repositories {
         mavenCentral()
-
         jcenter()
+        maven { url 'https://oss.jfrog.org/libs-snapshot' }
     }
+
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    group 'com.trunk.commons'
+    version = baseVersion
+
+    sourceCompatibility = 1.8
 
     dependencies {
         compile 'com.netflix.governator:governator-core:1.12.8'
@@ -31,5 +43,42 @@ configure(subprojects) {
         systemProperty("io.netty.leakDetectionLevel", "paranoid")
         systemProperty("io.LEVEL", "DEBUG")
         systemProperty("rx.LEVEL", "DEBUG")
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    artifacts {
+        archives sourcesJar, javadocJar
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                pom.withXml {
+                    asNode().dependencies.'*'.findAll() {
+                        it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+                            dep.name == it.artifactId.text()
+                        }
+                    }.each() {
+                        it.scope*.value = 'compile'
+                    }
+                }
+                from components.java
+                artifact sourcesJar {
+                    classifier "sources"
+                }
+                artifact javadocJar {
+                    classifier "javadoc"
+                }
+            }
+        }
     }
 }
