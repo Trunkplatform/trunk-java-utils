@@ -91,6 +91,10 @@ public class TestServer {
     withOAuthServer(given, ImmutableMap.of(), oAuthPort, responses);
   }
 
+  public static void withOAuthServer(OAuthInteraction given, Map<String, OAuthUser> users, HandleOAuth... responses) throws URISyntaxException, InterruptedException {
+    withOAuthServer(given, users, getRandomPort(), responses);
+  }
+
   public static void withOAuthServer(OAuthInteraction given, Map<String, OAuthUser> users, int oAuthPort, HandleOAuth... responses) throws URISyntaxException, InterruptedException {
     final int[] i = { 0 };
     HttpServer server = null;

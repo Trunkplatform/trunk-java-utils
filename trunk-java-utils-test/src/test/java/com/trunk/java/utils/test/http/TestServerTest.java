@@ -67,6 +67,15 @@ public class TestServerTest {
   }
 
   @Test
+  public void shouldReturnOKForValidOAuthInfoRequest() throws URISyntaxException, InterruptedException {
+    TestServer.withOAuthServer(host -> {
+      TestHttpClient testClient = new TestHttpClient();
+      CloseableHttpResponse response = testClient.get(host + "/oauth/token/info?access_token=test");
+      assertThat(response.getStatusLine().getStatusCode(), is(HttpResponseStatus.OK.code()));
+    }, ImmutableMap.of("test", new OAuthUser(ImmutableList.of(), ImmutableList.of(), ImmutableList.of(), false)));
+  }
+
+  @Test
   public void shouldReturnNotFoundIfUriIsInvalidForOAuthRequest() throws URISyntaxException, InterruptedException {
     TestServer.withOAuthServer(host -> {
       TestHttpClient testClient = new TestHttpClient();
