@@ -23,6 +23,10 @@ public class HttpServerRequest {
     return new QueryStringDecoder(request.getUri()).parameters();
   }
 
+  public String getHeader(String name) {
+    return request.headers().get(name);
+  }
+
   public ByteBuf getContent() {
     return this.content;
   }
