@@ -130,7 +130,7 @@ public class TestServer {
     }
   }
 
-  private static void parseGrantResponse(int[] i, HttpServerRequest request, HttpServerResponse response, HandleOAuth[] responses) {GrantRequest grantRequest = parseGrantRequest(request.getContent());
+  public static void parseGrantResponse(int[] i, HttpServerRequest request, HttpServerResponse response, HandleOAuth[] responses) {GrantRequest grantRequest = parseGrantRequest(request.getContent());
     GrantResponse grantResponse = responses[i[0]].f(grantRequest);
     if (i[0] < responses.length - 1) {
       i[0] += 1;
@@ -162,7 +162,7 @@ public class TestServer {
     return false;
   }
 
-  private static GrantRequest parseGrantRequest(ByteBuf content) {
+  public static GrantRequest parseGrantRequest(ByteBuf content) {
     String json = content.toString(CharsetUtil.UTF_8);
     JsonObject o = new JsonParser().parse(json).getAsJsonObject();
     return new GrantRequest(o.get("grant_type").getAsString(),
