@@ -1,5 +1,8 @@
 plugins {
+    id "com.jfrog.bintray" version "1.2"
 }
+
+description = 'Test helper netty server to setup expectation'
 
 dependencies {
     compile 'com.google.code.gson:gson:2.5'
@@ -7,3 +10,5 @@ dependencies {
 
     testCompile 'org.apache.httpcomponents:httpclient:4.5.2'
 }
+
+apply from: '../bintray.gradle'
