@@ -1,4 +1,4 @@
-package trunk.java.utils.test.http;
+package com.trunk.java.utils.test.http;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;

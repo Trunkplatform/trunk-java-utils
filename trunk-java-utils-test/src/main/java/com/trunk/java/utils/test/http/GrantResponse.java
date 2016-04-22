@@ -1,4 +1,4 @@
-package trunk.java.utils.test.http;
+package com.trunk.java.utils.test.http;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;

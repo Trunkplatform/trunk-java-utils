@@ -1,4 +1,4 @@
-package trunk.java.utils.test;
+package com.trunk.java.utils.test.http;
 
 import java.io.IOException;
 import java.net.URI;
@@ -10,14 +10,14 @@ import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.trunk.java.utils.test.http.GrantResponse;
+import com.trunk.java.utils.test.http.OAuthUser;
+import com.trunk.java.utils.test.http.TestHttpClient;
+import com.trunk.java.utils.test.http.TestServer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.util.CharsetUtil;
-import trunk.java.utils.test.http.GrantResponse;
-import trunk.java.utils.test.http.OAuthUser;
-import trunk.java.utils.test.http.TestHttpClient;
-import trunk.java.utils.test.http.TestServer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

@@ -1,4 +1,4 @@
-package trunk.java.utils.test.http;
+package com.trunk.java.utils.test.http;
 
 import java.util.List;
 import java.util.Map;

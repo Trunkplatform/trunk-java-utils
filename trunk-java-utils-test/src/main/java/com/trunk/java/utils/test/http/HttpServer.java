@@ -1,4 +1,4 @@
-package trunk.java.utils.test.http;
+package com.trunk.java.utils.test.http;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;

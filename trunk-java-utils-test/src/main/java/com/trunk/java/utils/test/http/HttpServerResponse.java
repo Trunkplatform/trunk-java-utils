@@ -1,4 +1,4 @@
-package trunk.java.utils.test.http;
+package com.trunk.java.utils.test.http;
 
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
