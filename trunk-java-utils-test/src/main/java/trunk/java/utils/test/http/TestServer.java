@@ -1,14 +1,5 @@
 package trunk.java.utils.test.http;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.logging.LogLevel;
-import io.netty.util.CharsetUtil;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,11 +8,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.logging.LogLevel;
+import io.netty.util.CharsetUtil;
+
 public class TestServer {
 
   public static final Gson GSON = new Gson();
 
-  public static <T, S> void withOAuthAndServer(GivenWithOAuth<T> given, HandleRequest<S> handleRequest, Then<T, S> then, int oAuthPort, int serverPort, HandleOAuth... responses) throws URISyntaxException, InterruptedException {
+  public static <T, S> void withOAuthAndServer(GivenWithOAuth<T> given, HandleRequest<S> handleRequest, Then<T, S> then, Map<String, OAuthUser> users, HandleOAuth... responses) throws URISyntaxException, InterruptedException {
+    withOAuthAndServer(given, handleRequest, then, getRandomPort(), getRandomPort(), users, responses);
+  }
+
+  public static <T, S> void withOAuthAndServer(GivenWithOAuth<T> given, HandleRequest<S> handleRequest, Then<T, S> then, HandleOAuth... responses) throws URISyntaxException, InterruptedException {
+    withOAuthAndServer(given, handleRequest, then, getRandomPort(), getRandomPort(), ImmutableMap.of(), responses);
+  }
+
+  public static <T, S> void withOAuthAndServer(GivenWithOAuth<T> given, HandleRequest<S> handleRequest, Then<T, S> then, int oAuthPort, int serverPort, Map<String, OAuthUser> users, HandleOAuth... responses) throws URISyntaxException, InterruptedException {
     withOAuthServer(
       oAuthHost ->
         withServer(
@@ -29,6 +38,7 @@ public class TestServer {
           handleRequest,
           then, serverPort
         ),
+      users,
       oAuthPort,
       responses
     );
@@ -73,50 +83,38 @@ public class TestServer {
     }
   }
 
+  public static void withOAuthServer(OAuthInteraction given, HandleOAuth... responses) throws URISyntaxException, InterruptedException {
+    withOAuthServer(given, getRandomPort(), responses);
+  }
+
   public static void withOAuthServer(OAuthInteraction given, int oAuthPort, HandleOAuth... responses) throws URISyntaxException, InterruptedException {
     withOAuthServer(given, ImmutableMap.of(), oAuthPort, responses);
   }
 
   public static void withOAuthServer(OAuthInteraction given, Map<String, OAuthUser> users, int oAuthPort, HandleOAuth... responses) throws URISyntaxException, InterruptedException {
-    final int[] i = {0};
+    final int[] i = { 0 };
     HttpServer server = null;
     try {
       server = HttpServer.newServer()
-        .withLogging(LogLevel.DEBUG)
+        .withLogging(LogLevel.INFO)
+        .setPort(oAuthPort)
         .start(
           (request, response) -> {
             if (!(request.getDecodedPath().equals("/oauth/token") || request.getDecodedPath().equals("/oauth/token/info"))) {
               response.setStatus(HttpResponseStatus.NOT_FOUND);
-            }
-            if (request.getDecodedPath().equals("/oauth/token/info")) {
-              if (request.getQueryParameters().containsKey("access_token") && !request.getQueryParameters().get("access_token").isEmpty()) {
-                String key = request.getQueryParameters().get("access_token").get(0);
-                if (users.containsKey(key)) {
-                  response.writeString(GSON.toJson(users.get(key)));
-                } else {
-                  response.setStatus(HttpResponseStatus.UNAUTHORIZED);
-                }
-              } else {
-                response.setStatus(HttpResponseStatus.BAD_REQUEST);
-              }
-            }
-            if (responses.length == 0) {
-              response.setStatus(HttpResponseStatus.FORBIDDEN);
+              return response;
             }
 
-            GrantRequest grantRequest = parseGrantRequest(request.getContent());
-            GrantResponse grantResponse = responses[i[0]].f(grantRequest);
-            if (i[0] < responses.length - 1) {
-              i[0] += 1;
+            if (getUserTokenInfo(users, request, response)) {
+              return response;
             }
-            String json = grantResponse.asJson();
-            if (json != null) {
-              response.addHeader("Content-Type", "application/json; charset=utf-8");
-              response.setStatus(grantResponse.getStatusCode());
-              response.writeString(json);
-            } else {
-              response.setStatus(grantResponse.getStatusCode());
+
+            if (responses.length == 0) {
+              response.setStatus(HttpResponseStatus.FORBIDDEN);
+              return response;
             }
+
+            parseGrantResponse(i[0], request, response, responses);
             return response;
           }
         );
@@ -128,12 +126,44 @@ public class TestServer {
     }
   }
 
-  public static GrantRequest parseGrantRequest(ByteBuf content) {
+  private static void parseGrantResponse(int i, HttpServerRequest request, HttpServerResponse response, HandleOAuth[] responses) {GrantRequest grantRequest = parseGrantRequest(request.getContent());
+    GrantResponse grantResponse = responses[i].f(grantRequest);
+    if (i < responses.length - 1) {
+      i += 1;
+    }
+    String json = grantResponse.asJson();
+    if (json != null) {
+      response.addHeader("Content-Type", "application/json; charset=utf-8");
+      response.setStatus(grantResponse.getStatusCode());
+      response.writeString(json);
+    } else {
+      response.setStatus(grantResponse.getStatusCode());
+    }
+  }
+
+  private static boolean getUserTokenInfo(Map<String, OAuthUser> users, HttpServerRequest request, HttpServerResponse response) {
+    if (request.getDecodedPath().equals("/oauth/token/info")) {
+      if (request.getQueryParameters().containsKey("access_token") && !request.getQueryParameters().get("access_token").isEmpty()) {
+        String key = request.getQueryParameters().get("access_token").get(0);
+        if (users.containsKey(key)) {
+          response.writeString(GSON.toJson(users.get(key)));
+        } else {
+          response.setStatus(HttpResponseStatus.UNAUTHORIZED);
+        }
+      } else {
+        response.setStatus(HttpResponseStatus.BAD_REQUEST);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  private static GrantRequest parseGrantRequest(ByteBuf content) {
     String json = content.toString(CharsetUtil.UTF_8);
     JsonObject o = new JsonParser().parse(json).getAsJsonObject();
     return new GrantRequest(o.get("grant_type").getAsString(),
-      o.get("username").getAsString(),
-      o.get("password").getAsString());
+                            o.get("username").getAsString(),
+                            o.get("password").getAsString());
   }
 
   public interface OAuthInteraction {
@@ -153,7 +183,7 @@ public class TestServer {
   }
 
   public interface HandleRequest<S> {
-    S f(HttpServer.HttpServerRequest request, HttpServer.HttpServerResponse response, CacheRequestContent<S> cacheRequestContent) throws IOException;
+    S f(HttpServerRequest request, HttpServerResponse response, CacheRequestContent<S> cacheRequestContent) throws IOException;
   }
 
   public interface CacheRequestContent<S> {

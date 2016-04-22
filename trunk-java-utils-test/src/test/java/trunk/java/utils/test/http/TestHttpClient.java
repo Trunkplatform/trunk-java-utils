@@ -1,13 +1,14 @@
 package trunk.java.utils.test.http;
 
+import java.io.IOException;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class TestHttpClient {
 
@@ -17,31 +18,23 @@ public class TestHttpClient {
     closeableHttpClient = HttpClients.createDefault();
   }
 
-  public String get(String url) {
+  public CloseableHttpResponse get(String url) {
     try {
       HttpGet httpGet = new HttpGet(url);
-      CloseableHttpResponse httpResponse = closeableHttpClient.execute(httpGet);
-
-      BufferedReader reader = new BufferedReader(new InputStreamReader(
-        httpResponse.getEntity().getContent()));
-
-      String inputLine;
-      StringBuffer response = new StringBuffer();
-
-      while ((inputLine = reader.readLine()) != null) {
-        response.append(inputLine);
-      }
-      reader.close();
-
-      return response.toString();
+      return closeableHttpClient.execute(httpGet);
     } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      try {
-        closeableHttpClient.close();
-      } catch (IOException e) {
-      }
+      return null;
     }
-    return null;
+  }
+
+  public CloseableHttpResponse post(String url, String jsonBody) {
+    HttpPost httpPost = new HttpPost(url);
+    StringEntity requestEntity = new StringEntity(jsonBody, ContentType.APPLICATION_JSON);
+    httpPost.setEntity(requestEntity);
+    try {
+      return closeableHttpClient.execute(httpPost);
+    } catch (IOException e) {
+      return null;
+    }
   }
 }
