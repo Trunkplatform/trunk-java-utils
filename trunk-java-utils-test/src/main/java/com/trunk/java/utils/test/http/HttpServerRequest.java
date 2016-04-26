@@ -25,6 +25,10 @@ public class HttpServerRequest {
     }
   }
 
+  public String getUri() {
+    return request.getUri();
+  }
+
   public Map<String, List<String>> getQueryParameters() {
     return new QueryStringDecoder(request.getUri()).parameters();
   }

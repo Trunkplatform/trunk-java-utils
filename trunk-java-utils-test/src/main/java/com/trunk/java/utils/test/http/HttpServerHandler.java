@@ -5,14 +5,12 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpObject;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 
 public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
+  public static final String EMPTY_LAST_HTTP_CONTENT = "EmptyLastHttpContent";
   private final HttpServer.RequestHandler handler;
   private HttpServerRequest request;
 
@@ -25,11 +23,20 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     if (msg instanceof HttpRequest) {
       request = new HttpServerRequest((HttpRequest) msg);
     } else if (msg instanceof HttpContent) {
-      setContent((HttpContent) msg);
       if (msg instanceof LastHttpContent) {
+        if (!msg.toString().equals(EMPTY_LAST_HTTP_CONTENT)) {
+          setContent((HttpContent) msg);
+        }
         HttpServerResponse response = new HttpServerResponse();
         handler.f(request, response);
+        if (response.getResponse().getStatus().equals(HttpResponseStatus.OK)) {
+          response.getResponse().headers().set("Content-Length", response.getResponse().content().readableBytes());
+        } else {
+          response.getResponse().headers().set("Content-Length", 0);
+        }
         ctx.writeAndFlush(response.getResponse()).addListener(ChannelFutureListener.CLOSE);
+      } else if (msg instanceof DefaultHttpContent) {
+        setContent((HttpContent) msg);
       }
     }
   }
