@@ -2,6 +2,18 @@
 
 A collection of utility libraries for Java
 
+TODO build and release lozenges
+
+## Building
+
+Using `trunk-java-utils` uses [Gradle](http://gradle.org/) for build.
+
+```bash
+git clone https://github.com/Trunkplatform/trunk-java-utils.git
+cd trunk-java-utils
+./gradlew clean build
+```
+
 ## trunk-java-test
 
 A [Netty](http://netty.io/) based HTTP test harness.
