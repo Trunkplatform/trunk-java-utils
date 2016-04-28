@@ -3,6 +3,8 @@ apply plugin: 'maven'
 
 group = 'com.trunk.commons'
 
+def baseVersion = '1.0.24'
+
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -17,7 +19,7 @@ configure(subprojects) {
     apply plugin: 'maven-publish'
 
     group 'com.trunk.commons'
-    version = project.hasProperty('app_version') ? app_version : 'local'
+    version = baseVersion
 
     sourceCompatibility = 1.8
 
