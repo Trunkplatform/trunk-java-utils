@@ -1,11 +1,10 @@
 #ignore build
 .gradle
-*/build
+**/build
 
 #ignore intellij
 atlassian-ide-plugin.xml
 .idea/
-*.iml
 *.ipr
 *.iws
 out/
