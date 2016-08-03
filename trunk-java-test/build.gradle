@@ -6,7 +6,7 @@ description = 'Test helper netty server to setup expectation'
 
 dependencies {
     compile 'com.google.code.gson:gson:2.5'
-    compile 'io.netty:netty-all:4.1.0.Beta7'
+    compile 'io.netty:netty-all:4.1.0.Final'
     compile 'com.google.guava:guava:19.0'
 
     testCompile 'org.apache.httpcomponents:httpclient:4.5.2'
