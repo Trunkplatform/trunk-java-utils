@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 group = 'com.trunk.commons'
 
-def baseVersion = '1.0.24'
+def baseVersion = '1.0.25'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
