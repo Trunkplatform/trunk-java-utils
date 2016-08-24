@@ -52,7 +52,11 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
     HttpContent msgContent = msg;
     String reqBody = msgContent.content().toString(CharsetUtil.UTF_8);
     ByteBuf buffer = Unpooled.copiedBuffer(reqBody, CharsetUtil.UTF_8);
-    request.setContent(buffer);
+    if (request.getContent() == null){
+      request.setContent(buffer);
+    } else {
+      request.addContent(buffer);
+    }
   }
 
   @Override

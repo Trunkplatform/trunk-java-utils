@@ -41,6 +41,10 @@ public class HttpServerRequest {
     return this.content;
   }
 
+  public void addContent(ByteBuf newContent) {
+    this.content.writeBytes(newContent);
+  }
+
   public void setContent(ByteBuf content) {
     this.content = content;
   }
